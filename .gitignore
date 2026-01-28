@@ -1,0 +1,7 @@
+/back/.vscode
+/back/dist
+/back/node_modules
+
+
+/Front/.next
+/Front/node_modules

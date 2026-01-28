@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+
+  --card: #ffffff;
+  --primary: #174500cd;
+  --primary-foreground: #000000;
+
+  --secondary: #f4f4f5;
+  --border: #e4e4e7;
+  --muted-foreground: #71717a;
+
+  --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-medium: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --shadow-elevated: 0 16px 40px rgba(0, 0, 0, 0.16);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-border: var(--border);
+  --color-muted-foreground: var(--muted-foreground);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+@layer components {
+  .input-field {
+    @apply w-full px-4 py-3 bg-secondary border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200;
+  }
+
+  .modal-overlay {
+    @apply fixed inset-0 bg-foreground/40 backdrop-blur-sm z-50;
+  }
+
+  .modal-content {
+    @apply bg-card rounded-2xl p-8;
+    box-shadow: var(--shadow-elevated);
+  }
+}
