@@ -2,6 +2,14 @@
 /back/dist
 /back/node_modules
 
+/backend-api/.vscode
+/backend-api/dist
+/backend-api/node_modules
+
 
 /Front/.next
 /Front/node_modules
+
+
+/frontend-spa/.next
+/frontend-spa/node_modules
