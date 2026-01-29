@@ -21,4 +21,7 @@ export class ProductModel extends Model<IProduct, Omit<IProduct, 'idProduct'>> {
 
   @Column(DataType.INTEGER)
   price: number;
+
+  @Column(DataType.INTEGER)
+  quantity: number;
 }

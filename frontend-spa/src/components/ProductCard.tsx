@@ -22,9 +22,32 @@ export const ProductCard = ({ product, onBuy }: ProductCardProps) => {
         )}
       </div>
       <div className="p-6">
-        <h3 className="font-display text-xl font-medium text-foreground mb-2">
+        <p className="font-display text-xl font-medium text-foreground mb-2 flex items-center gap-3">
           {product.name}
-        </h3>
+          <span
+            title={`Cantidad: ${product.quantity}`}
+            aria-label={`Cantidad ${product.quantity}`}
+            className={`inline-flex items-center gap-2 px-2 py-1 rounded-full text-sm font-semibold shadow select-none ${
+              product.quantity === 0
+                ? "bg-red-100 text-red-700"
+                : product.quantity < 10
+                  ? "bg-amber-100 text-amber-800"
+                  : "bg-green-100 text-green-800"
+            }`}
+          >
+            <span
+              className={`w-2 h-2 rounded-full ${
+                product.quantity === 0
+                  ? "bg-red-600"
+                  : product.quantity < 10
+                    ? "bg-amber-600"
+                    : "bg-green-600"
+              }`}
+              aria-hidden
+            />
+            <span>{product.quantity > 100 ? "+100" : product.quantity}</span>
+          </span>
+        </p>
         <div className="flex items-center justify-between">
           <span className="font-display text-2xl font-semibold text-primary">
             {formatValue(product.price)}

@@ -3,7 +3,7 @@ import {
   Body,
   Controller,
   Get,
-  Param,
+  Query,
   Patch,
   Post,
 } from '@nestjs/common';
@@ -21,10 +21,16 @@ export class TransactionController {
     private readonly updateTransaction: UpdateTransaction,
   ) {}
 
-  @Get(':id')
-  async findAll(@Param('id') id: string) {
+  @Get()
+  async findAll(
+    @Query('id') id: string,
+    @Query('idProduct') idProduct: string,
+  ) {
     try {
-      return await this.findTransaction.execute({ idTransactionWompi: id });
+      return await this.findTransaction.execute({
+        idTransactionWompi: id,
+        idProduct,
+      });
     } catch (e) {
       const err = e as AxiosError<{ error?: { reason: string } }>;
       throw new BadRequestException(

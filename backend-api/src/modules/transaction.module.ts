@@ -3,9 +3,12 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { CreateTransaction } from 'src/application/use-cases/transactions/CreateTransaction';
 import { FindTransaction } from 'src/application/use-cases/transactions/FindTransaction';
 import { UpdateTransaction } from 'src/application/use-cases/transactions/UpdateTransaction';
+import { PRODUCT_REPOSITORY } from 'src/domain/ports/product.repository';
 import { TRANSACTION_REPOSITORY } from 'src/domain/ports/transaction.repository';
 import { TransactionController } from 'src/infraestructure/controllers/transaction.controller';
+import { ProductModel } from 'src/infraestructure/models/product.model';
 import { TransactionModel } from 'src/infraestructure/models/transaction.model';
+import { SequelizeProductRepository } from 'src/infraestructure/repositories/product.repository';
 import { SequelizeTransactionRepository } from 'src/infraestructure/repositories/transaction.repository';
 import { WompiMerchantService } from 'src/infraestructure/wompi/wompi-merchant.service';
 import {
@@ -14,7 +17,7 @@ import {
 } from 'src/infraestructure/wompi/wompi-transaction.service';
 
 @Module({
-  imports: [SequelizeModule.forFeature([TransactionModel])],
+  imports: [SequelizeModule.forFeature([TransactionModel, ProductModel])],
   controllers: [TransactionController],
   providers: [
     CreateTransaction,
@@ -26,6 +29,10 @@ import {
     {
       provide: TRANSACTION_REPOSITORY,
       useClass: SequelizeTransactionRepository,
+    },
+    {
+      provide: PRODUCT_REPOSITORY,
+      useClass: SequelizeProductRepository,
     },
   ],
 })

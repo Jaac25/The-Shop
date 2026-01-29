@@ -1,15 +1,17 @@
 import { CheckCircle, Clock, type LucideIcon, X, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";
-import useSWR from "swr";
+import useSWR, { type KeyedMutator } from "swr";
 import { fetcher } from "../app/providers";
 import { useFormatValue } from "../core/hooks/useFormatValue";
 import type { ITransaction, TransactionResume } from "../types/transactions";
 import { Loading } from "./Loading";
 import { Button } from "./ui/Button";
+import type { Product } from "../types/product";
 
 interface TransactionSummaryProps {
   transaction: TransactionResume;
   onClose: () => void;
+  mutate: KeyedMutator<Product[]>;
 }
 
 interface StatusConfig {
@@ -117,6 +119,7 @@ const DetailRow = ({
 
 export const TransactionSummary = ({
   transaction,
+  mutate,
   onClose,
 }: TransactionSummaryProps) => {
   const { formatValue } = useFormatValue();
@@ -125,9 +128,15 @@ export const TransactionSummary = ({
   );
 
   const { data: newTransaction, isLoading } = useSWR<ITransaction>(
-    state === "PENDING" && {
-      url: `/transactions/${transaction.idTransactionWompi}`,
-    },
+    state === "PENDING" &&
+      transaction.product.idProduct &&
+      transaction.idTransactionWompi && {
+        url: `/transactions`,
+        params: {
+          id: transaction.idTransactionWompi,
+          idProduct: transaction.product.idProduct,
+        },
+      },
     fetcher,
     { refreshInterval: 4000 },
   );
@@ -139,11 +148,12 @@ export const TransactionSummary = ({
       newTransaction.status !== "PENDING"
     ) {
       const timer = setTimeout(() => {
+        if (newTransaction.status === "APPROVED") mutate();
         setState(newTransaction.status);
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [newTransaction?.status, state]);
+  }, [newTransaction?.status, state, mutate]);
 
   if (isLoading) {
     return (

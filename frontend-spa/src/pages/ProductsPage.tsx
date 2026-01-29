@@ -34,7 +34,11 @@ export const ProductsPage = () => {
     setTransaction(null);
   };
 
-  const { data: products = [], isLoading: isLoading } = useSWR<Product[]>(
+  const {
+    data: products = [],
+    isLoading: isLoading,
+    mutate,
+  } = useSWR<Product[]>(
     {
       url: "/products",
     },
@@ -84,7 +88,7 @@ export const ProductsPage = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="py-8 border-b border-border">
+      <header className="sticky top-0 bg-linear-to-t z-50 from-green-100 backdrop-blur-md to-transparent py-8 ">
         <div className="container max-w-6xl mx-auto px-4">
           <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground text-center">
             Boutique Elegance
@@ -109,6 +113,7 @@ export const ProductsPage = () => {
       {transaction && (
         <TransactionSummary
           transaction={transaction}
+          mutate={mutate}
           onClose={handleCloseSummary}
         />
       )}
