@@ -10,6 +10,7 @@ import { ProductCard } from "../components/ProductCard";
 import { TransactionSummary } from "../components/TransactionSummary";
 import type { Product } from "../types/product";
 import type { TransactionResume } from "../types/transactions";
+import { motion, AnimatePresence } from "framer-motion";
 
 export const ProductsPage = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -74,14 +75,28 @@ export const ProductsPage = () => {
   else
     children = (
       <main className="container max-w-6xl mx-auto px-4 py-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {products.map((product, index) => (
-          <div
-            key={product.idProduct}
-            style={{ animationDelay: `${index * 100}ms` }}
-          >
-            <ProductCard product={product} onBuy={handleBuy} />
-          </div>
-        ))}
+        <AnimatePresence>
+          {products.map((product, index) => (
+            <motion.div
+              key={product.idProduct}
+              initial={{ opacity: 0, y: 25, scale: 0.95 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{
+                duration: 0.4,
+                delay: index * 0.05,
+                ease: "easeOut",
+              }}
+              // className="flex justify-self-center flex-col items-center"
+            >
+              <ProductCard
+                key={product.idProduct}
+                product={product}
+                onBuy={handleBuy}
+              />
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </main>
     );
 

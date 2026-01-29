@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { useFormatValue } from "../core/hooks/useFormatValue";
 import type { Product } from "../types/product";
 import { Button } from "./ui/Button";
@@ -10,8 +11,9 @@ interface ProductCardProps {
 export const ProductCard = ({ product, onBuy }: ProductCardProps) => {
   const { formatValue } = useFormatValue();
 
+  const sold = product.quantity === 0;
   return (
-    <div className="bg-card rounded-2xl shadow overflow-hidden transition-all duration-300 group">
+    <div className=" h-full bg-card rounded-2xl shadow overflow-hidden transition-all duration-300 group">
       <div className="aspect-square overflow-hidden">
         {product?.image && (
           <img
@@ -53,10 +55,15 @@ export const ProductCard = ({ product, onBuy }: ProductCardProps) => {
             {formatValue(product.price)}
           </span>
           <Button
-            className="w-36 h-14 font-semibold"
+            className={clsx(
+              "w-36 h-14 font-semibold",
+              sold &&
+                "bg-red-500 text-black cursor-default! scale-100! hover:opacity-100",
+            )}
+            disabled={sold}
             onClick={() => onBuy(product)}
           >
-            Pay with credit card
+            {sold ? "Sold" : "Pay with credit card"}
           </Button>
         </div>
       </div>

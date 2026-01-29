@@ -7,6 +7,7 @@ import type { ITransaction, TransactionResume } from "../types/transactions";
 import { Loading } from "./Loading";
 import { Button } from "./ui/Button";
 import type { Product } from "../types/product";
+import dayjs from "dayjs";
 
 interface TransactionSummaryProps {
   transaction: TransactionResume;
@@ -94,7 +95,9 @@ const TransactionDetails = ({
       <DetailRow label="Tarjeta" value={`•••• ${transaction.cardLast4}`} />
       <DetailRow
         label="Fecha"
-        value={transaction.finalizedAt || transaction.createdAt}
+        value={dayjs(transaction.finalizedAt || transaction.createdAt).format(
+          "DD-MM-YYYY HH:mm",
+        )}
       />
     </div>
   </div>
