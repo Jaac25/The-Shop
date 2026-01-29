@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { Order } from 'src/domain/entities/Order';
+import { IOrder } from 'src/domain/entities/Order';
 import { OrderRepository } from 'src/domain/ports/order.repository';
 import { OrderModel } from '../models/order.model';
 
@@ -11,10 +11,7 @@ export class SequelizeOrderRepository implements OrderRepository {
     private readonly orderModel: typeof OrderModel,
   ) {}
 
-  async create(order: Order): Promise<void> {
-    await this.orderModel.create({
-      idProduct: order.idProduct,
-      idUser: order.idUser,
-    });
+  async create(order: IOrder): Promise<void> {
+    await this.orderModel.create(order);
   }
 }

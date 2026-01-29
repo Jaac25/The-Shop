@@ -21,14 +21,15 @@ export class CreateTransaction {
     token,
   }: {
     amount_in_cents?: number;
-    idOrder: string;
+    idOrder?: number;
     customer_email: string;
     token: string;
-  }): Promise<void> {
+  }): Promise<string> {
     if (
       !amount_in_cents ||
       typeof amount_in_cents !== 'number' ||
-      amount_in_cents > 100000000000000
+      amount_in_cents > 100000000000000 ||
+      amount_in_cents < 150000 //1.500
     ) {
       throw new Error('Missing or wrong amount_in_cents');
     }
@@ -44,7 +45,12 @@ export class CreateTransaction {
         amount_in_cents,
         currency: 'COP',
         customer_email,
-        payment_method: { token },
+        payment_method: {
+          type: 'CARD',
+          installments: '1',
+          token,
+        },
+
         acceptance_token: acceptance_token || '',
       },
       idOrder,
@@ -58,7 +64,7 @@ export class CreateTransaction {
       new Transaction({
         amountInCents: amount_in_cents,
         createdAt: transaction.created_at,
-        idOrder,
+        idOrder: parseInt(idOrder.toString()) ?? 0,
         customerEmail: customer_email,
         idTransactionWompi: transaction.id,
         reference: transaction.reference,
@@ -67,5 +73,6 @@ export class CreateTransaction {
         statusMessage: transaction.status_message,
       }),
     );
+    return transaction.id;
   }
 }

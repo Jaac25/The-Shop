@@ -1,7 +1,7 @@
 export interface ITransaction {
   idTransaction?: string;
   idTransactionWompi: string;
-  idOrder: string;
+  idOrder: number;
   createdAt: string;
   amountInCents: number;
   reference: string;
@@ -23,7 +23,7 @@ export class Transaction {
     return this.attributes.idTransactionWompi;
   }
 
-  get idOrder(): string {
+  get idOrder(): number {
     return this.attributes.idOrder;
   }
 

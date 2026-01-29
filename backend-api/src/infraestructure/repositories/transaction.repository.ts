@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { Transaction } from '../../domain/entities/Transaction';
+import { ITransaction, Transaction } from '../../domain/entities/Transaction';
 import { TransactionRepository } from '../../domain/ports/transaction.repository';
 import { TransactionModel } from '../models/transaction.model';
 
@@ -11,8 +11,28 @@ export class SequelizeTransactionRepository implements TransactionRepository {
     private readonly transactionModel: typeof TransactionModel,
   ) {}
 
-  async create(transaction: Transaction): Promise<void> {
-    await this.transactionModel.create({
+  async findOne(idTransaction: string): Promise<ITransaction | undefined> {
+    const res = await this.transactionModel.findOne({
+      where: { idTransactionWompi: idTransaction },
+    });
+
+    const transaction: ITransaction = {
+      amountInCents: res?.dataValues?.amountInCents ?? 0,
+      idTransactionWompi: res?.dataValues?.idTransactionWompi ?? '',
+      idOrder: res?.dataValues?.idOrder ?? 0,
+      createdAt: res?.dataValues?.createdAt ?? '',
+      reference: res?.dataValues?.reference ?? '',
+      customerEmail: res?.dataValues?.customerEmail ?? '',
+      status: res?.dataValues?.status ?? '',
+      finalizedAt: res?.dataValues?.finalizedAt ?? '',
+      statusMessage: res?.dataValues?.statusMessage,
+      idTransaction: res?.dataValues?.idTransaction?.toString(),
+    };
+    return transaction;
+  }
+
+  async create(transaction: Transaction): Promise<string> {
+    const newTransaction = await this.transactionModel.create({
       status: transaction.status,
       amountInCents: transaction.amountInCents,
       customerEmail: transaction.customerEmail,
@@ -23,11 +43,15 @@ export class SequelizeTransactionRepository implements TransactionRepository {
       reference: transaction.reference,
       statusMessage: transaction.statusMessage,
     });
+    return newTransaction.idTransactionWompi;
   }
 
-  async update(transaction: Transaction): Promise<void> {
+  async update(
+    transaction: Partial<ITransaction>,
+  ): Promise<ITransaction | undefined> {
     await this.transactionModel.update(transaction, {
-      where: { id: transaction.idTransaction },
+      where: { idTransactionWompi: transaction.idTransactionWompi },
     });
+    return this.findOne(transaction.idTransactionWompi ?? '');
   }
 }

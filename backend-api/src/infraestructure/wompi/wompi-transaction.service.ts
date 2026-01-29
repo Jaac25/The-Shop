@@ -15,8 +15,8 @@ const generateSHA256 = (text: string): string => {
 export class WompiService {
   constructor(private readonly config: ConfigService) {}
 
-  async createTransaction(body: ITransactionBody, idProduct: string) {
-    const reference = `${idProduct}_${uuid()}`;
+  async createTransaction(body: ITransactionBody, idOrder: number) {
+    const reference = `${idOrder}_${uuid()}`;
 
     const concatenatedText =
       `${reference}${body.amount_in_cents}${body.currency}` +
@@ -51,5 +51,23 @@ export class GetAcceptanceTokenService {
       `${this.config.get('WOMPI_ENVIRONMENT')}/merchants/${this.config.get('WOMPI_PUBLIC_KEY')}`,
     );
     return response?.data?.data.presigned_acceptance?.acceptance_token;
+  }
+}
+
+@Injectable()
+export class FindTransactionWompiService {
+  constructor(private readonly config: ConfigService) {}
+
+  async findTransaction(id: string) {
+    const response = await axios.get<IMetadata<ITransactionWompi>>(
+      `${this.config.get('WOMPI_ENVIRONMENT')}/transactions/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${this.config.get('WOMPI_PUBLIC_KEY')}`,
+        },
+      },
+    );
+
+    return response.data.data;
   }
 }

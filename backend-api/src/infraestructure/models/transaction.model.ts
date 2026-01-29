@@ -1,5 +1,4 @@
 import {
-  BelongsTo,
   Column,
   DataType,
   ForeignKey,
@@ -7,9 +6,13 @@ import {
   Table,
 } from 'sequelize-typescript';
 import { OrderModel } from './order.model';
+import { ITransaction } from 'src/domain/entities/Transaction';
 
 @Table({ tableName: 'transactions', timestamps: false })
-export class TransactionModel extends Model {
+export class TransactionModel extends Model<
+  ITransaction,
+  Omit<ITransaction, 'idTransaction'>
+> {
   @Column({
     type: DataType.INTEGER,
     primaryKey: true,
@@ -21,14 +24,17 @@ export class TransactionModel extends Model {
   idTransactionWompi: string;
 
   @ForeignKey(() => OrderModel)
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+  })
+  idOrder: number;
+
   @Column(DataType.STRING)
-  idOrder: string;
+  declare createdAt: string;
 
-  @Column(DataType.DATE)
-  declare createdAt: Date;
-
-  @Column(DataType.DATE)
-  finalizedAt: Date;
+  @Column(DataType.STRING)
+  finalizedAt: string;
 
   @Column(DataType.FLOAT)
   amountInCents: number;
@@ -44,7 +50,4 @@ export class TransactionModel extends Model {
 
   @Column(DataType.STRING)
   statusMessage: string;
-
-  @BelongsTo(() => OrderModel)
-  order: OrderModel;
 }

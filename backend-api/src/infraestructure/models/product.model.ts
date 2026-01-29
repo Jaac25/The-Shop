@@ -1,7 +1,8 @@
 import { Column, DataType, Model, Table } from 'sequelize-typescript';
+import { IProduct } from 'src/domain/entities/Product';
 
 @Table({ tableName: 'products', timestamps: false })
-export class ProductModel extends Model {
+export class ProductModel extends Model<IProduct, Omit<IProduct, 'idProduct'>> {
   @Column({
     type: DataType.INTEGER,
     primaryKey: true,

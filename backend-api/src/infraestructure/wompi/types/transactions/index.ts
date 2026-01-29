@@ -6,7 +6,7 @@
 export interface ITransactionBody {
   acceptance_token: string;
   amount_in_cents: number;
-  currency: "COP" | "USD";
+  currency: 'COP' | 'USD';
   customer_email: string;
   payment_method: {
     type?: string;
@@ -51,7 +51,7 @@ export interface ITransactionWompi {
   currency: string;
   payment_method_type: string;
   payment_method: {
-    type: "PSE" | "CARD";
+    type: 'PSE' | 'CARD';
     extra: {
       async_payment_url?: string;
       ticket_id?: string;
@@ -98,8 +98,8 @@ export interface ITransactionWompi {
 }
 
 export type TRANSACTION_STATUS =
-  | "APPROVED"
-  | "PENDING"
-  | "DECLINED"
-  | "VOIDED"
-  | "ERROR";
+  | 'APPROVED'
+  | 'PENDING'
+  | 'DECLINED'
+  | 'VOIDED'
+  | 'ERROR';

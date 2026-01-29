@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { IOrder, Order } from 'src/domain/entities/Order';
+import { IOrder } from 'src/domain/entities/Order';
 import type { OrderRepository } from 'src/domain/ports/order.repository';
 import { ORDER_REPOSITORY } from 'src/domain/ports/order.repository';
 import { NUMBER_REGEX } from 'src/shared/regex.constants';
@@ -20,11 +20,9 @@ export class CreateOrder {
       throw new Error('Missing or wrong idProduct ');
     }
 
-    await this.repo.create(
-      new Order({
-        idProduct,
-        idUser,
-      }),
-    );
+    await this.repo.create({
+      idProduct,
+      idUser,
+    });
   }
 }
