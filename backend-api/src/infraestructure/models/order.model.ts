@@ -15,4 +15,7 @@ export class OrderModel extends Model<IOrder, Omit<IOrder, 'idOrder'>> {
 
   @Column(DataType.STRING)
   idUser: string;
+
+  @Column(DataType.STRING)
+  idAddress: string;
 }

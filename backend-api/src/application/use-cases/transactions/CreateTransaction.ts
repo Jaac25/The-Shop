@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Transaction } from 'src/domain/entities/Transaction';
-import { TRANSACTION_REPOSITORY } from 'src/domain/ports/transaction.repository';
 import type { TransactionRepository } from 'src/domain/ports/transaction.repository';
+import { TRANSACTION_REPOSITORY } from 'src/domain/ports/transaction.repository';
 import { WompiMerchantService } from 'src/infraestructure/wompi/wompi-merchant.service';
 import { WompiService } from 'src/infraestructure/wompi/wompi-transaction.service';
 
@@ -73,6 +73,7 @@ export class CreateTransaction {
         statusMessage: transaction.status_message,
       }),
     );
+
     return transaction.id;
   }
 }

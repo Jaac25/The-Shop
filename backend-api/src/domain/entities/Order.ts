@@ -2,6 +2,7 @@ export interface IOrder {
   idOrder?: string;
   idProduct: string;
   idUser: string;
+  idAddress: string;
 }
 
 export class Order {
@@ -15,5 +16,9 @@ export class Order {
   }
   get idUser(): string | undefined {
     return this.attributes.idUser;
+  }
+
+  get idAddress(): string | undefined {
+    return this.attributes.idAddress;
   }
 }

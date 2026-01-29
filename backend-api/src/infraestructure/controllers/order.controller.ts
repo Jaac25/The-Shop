@@ -1,18 +1,22 @@
 import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
 import { CreateOrder } from 'src/application/use-cases/orders/CreateOrder';
-import { IOrder } from 'src/domain/entities/Order';
 
 @Controller('orders')
 export class OrderController {
   constructor(private readonly createOrder: CreateOrder) {}
 
   @Post()
-  async create(@Body() body: Partial<IOrder>) {
+  async create(
+    @Body()
+    body: {
+      name: string;
+      email: string;
+      address: string;
+      idProduct: string;
+    },
+  ): Promise<{ message: string }> {
     try {
-      await this.createOrder.execute({
-        idUser: body.idUser ?? '',
-        idProduct: body.idProduct ?? '',
-      });
+      await this.createOrder.execute(body);
       return { message: 'Order created successfully' };
     } catch (error) {
       console.error('Error creating order:', error);

@@ -10,7 +10,6 @@ export class AddressController {
   async create(@Body() body: Partial<IAddress>) {
     try {
       await this.createAddress.execute({
-        idOrder: body?.idOrder ?? '',
         address: body?.address ?? '',
       });
       return { message: 'Address created successfully' };

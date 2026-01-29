@@ -11,10 +11,11 @@ export class SequelizeUserRepository implements UserRepository {
     private readonly userModel: typeof UserModel,
   ) {}
 
-  async create(user: IUser): Promise<void> {
-    await this.userModel.create({
+  async create(user: IUser): Promise<{ id: string }> {
+    const u = await this.userModel.create({
       name: user.name,
       email: user.email,
     });
+    return { id: u.idUser.toString() };
   }
 }

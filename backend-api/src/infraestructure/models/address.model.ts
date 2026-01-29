@@ -11,8 +11,5 @@ export class AddressModel extends Model<IAddress, Omit<IAddress, 'idAddress'>> {
   idAddress: number;
 
   @Column(DataType.STRING)
-  idOrder: string;
-
-  @Column(DataType.STRING)
   address: string;
 }

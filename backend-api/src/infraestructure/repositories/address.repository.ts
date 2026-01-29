@@ -11,10 +11,10 @@ export class SequelizeAddressRepository implements AddressRepository {
     private readonly addressModel: typeof AddressModel,
   ) {}
 
-  async create(address: IAddress): Promise<void> {
-    await this.addressModel.create({
-      idOrder: address.idOrder,
+  async create(address: IAddress): Promise<{ id: string }> {
+    const a = await this.addressModel.create({
       address: address.address,
     });
+    return { id: a.idAddress.toString() };
   }
 }
