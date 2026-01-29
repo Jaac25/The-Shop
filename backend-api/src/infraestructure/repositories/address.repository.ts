@@ -15,6 +15,7 @@ export class SequelizeAddressRepository implements AddressRepository {
     const a = await this.addressModel.create({
       address: address.address,
     });
-    return { id: a.idAddress.toString() };
+    const idAddress = a?.dataValues?.idAddress?.toString() ?? '';
+    return { id: idAddress };
   }
 }

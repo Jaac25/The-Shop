@@ -28,7 +28,7 @@ export class CreateOrder {
     email: string;
     address: string;
     idProduct: string;
-  }): Promise<void> {
+  }): Promise<{ id: string }> {
     if (!idProduct || !NUMBER_REGEX.test(idProduct)) {
       throw new Error('Missing or wrong idProduct ');
     }
@@ -45,10 +45,15 @@ export class CreateOrder {
       throw new Error('Missing or wrong idAddress');
     }
 
-    await this.repo.create({
+    const { id } = await this.repo.create({
       idProduct,
       idUser,
       idAddress,
     });
+    if (!id) {
+      throw new Error('Error creating order');
+    }
+
+    return { id };
   }
 }

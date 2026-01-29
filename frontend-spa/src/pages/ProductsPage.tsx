@@ -3,25 +3,25 @@
 import { useState } from "react";
 
 import useSWR from "swr";
-import type { Product } from "../types/product";
-import {
-  CheckoutModal,
-  type TransactionData,
-} from "../components/CheckoutModal";
+import { fetcher } from "../app/providers";
+import { CheckoutModal } from "../components/CheckoutModal";
 import { Loading } from "../components/Loading";
 import { ProductCard } from "../components/ProductCard";
 import { TransactionSummary } from "../components/TransactionSummary";
-import { fetcher } from "../app/providers";
+import type { Product } from "../types/product";
+import type { TransactionResume } from "../types/transactions";
 
 export const ProductsPage = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [transaction, setTransaction] = useState<TransactionData | null>(null);
+  const [transaction, setTransaction] = useState<TransactionResume | null>(
+    null,
+  );
 
   const handleBuy = (product: Product) => {
     setSelectedProduct(product);
   };
 
-  const handlePaymentSuccess = (transactionData: TransactionData) => {
+  const handlePaymentSuccess = (transactionData: TransactionResume) => {
     setSelectedProduct(null);
     setTransaction(transactionData);
   };
@@ -71,7 +71,10 @@ export const ProductsPage = () => {
     children = (
       <main className="container max-w-6xl mx-auto px-4 py-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {products.map((product, index) => (
-          <div key={product.id} style={{ animationDelay: `${index * 100}ms` }}>
+          <div
+            key={product.idProduct}
+            style={{ animationDelay: `${index * 100}ms` }}
+          >
             <ProductCard product={product} onBuy={handleBuy} />
           </div>
         ))}

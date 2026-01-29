@@ -36,34 +36,34 @@ export class TransactionController {
   @Post()
   async create(@Body() body: Partial<ITransaction>) {
     try {
-      const id = await this.createTransaction.execute({
+      const transaction = await this.createTransaction.execute({
         customer_email: body.customerEmail ?? '',
         idOrder: body.idOrder,
         amount_in_cents: parseFloat(`${body.amountInCents}`) ?? 0,
         token: body.token ?? '',
       });
-      return id;
+      return transaction;
     } catch (e) {
       const error = e as AxiosError<{
         error: {
           messages?: Record<
             string,
-            { messages?: Record<string, string | string[]> }
+            { messages?: Record<string, string | string[]> | string[] }
           >;
         };
       }>;
 
       const errors = Object.entries(
         error?.response?.data?.error?.messages ?? {},
-      ).flatMap(
-        ([k, v]) =>
-          `${k} -> ${Object.entries(v.messages ?? {})
-            .map(
-              ([key, value]) =>
-                `${key}: ${typeof value === 'string' ? value : value.join(', ')}`,
-            )
-            .join(', ')}`,
-      );
+      ).flatMap(([k, v]) => {
+        if (Array.isArray(v)) return `${k}: ${v.join(', ')}`;
+        return `${k} -> ${Object.entries(v.messages ?? {})
+          .map(
+            ([key, value]) =>
+              `${key}: ${typeof value === 'string' ? value : value.join(', ')}`,
+          )
+          .join(', ')}`;
+      });
       throw new BadRequestException(
         errors?.length
           ? errors.join('\n')
@@ -103,7 +103,7 @@ export class TransactionController {
       throw new BadRequestException(
         errors?.length
           ? errors.join('\n')
-          : `Error creating transaction: ${error.toString()}`,
+          : `Error updating transaction: ${error.toString()}`,
       );
     }
   }

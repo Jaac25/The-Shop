@@ -3,11 +3,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AddressModule } from './modules/address.module';
 import { OrderModule } from './modules/order.module';
 import { ProductModule } from './modules/product.module';
 import { TransactionModule } from './modules/transaction.module';
 import { UsersModule } from './modules/user.module';
-import { AddressModule } from './modules/address.module';
 
 @Module({
   imports: [

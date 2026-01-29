@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Transaction } from 'src/domain/entities/Transaction';
+import { ITransaction, Transaction } from 'src/domain/entities/Transaction';
 import type { TransactionRepository } from 'src/domain/ports/transaction.repository';
 import { TRANSACTION_REPOSITORY } from 'src/domain/ports/transaction.repository';
 import { WompiMerchantService } from 'src/infraestructure/wompi/wompi-merchant.service';
@@ -24,7 +24,7 @@ export class CreateTransaction {
     idOrder?: number;
     customer_email: string;
     token: string;
-  }): Promise<string> {
+  }): Promise<ITransaction> {
     if (
       !amount_in_cents ||
       typeof amount_in_cents !== 'number' ||
@@ -60,7 +60,7 @@ export class CreateTransaction {
       throw new Error('Not was possible paying');
     }
 
-    await this.repo.create(
+    const t = await this.repo.create(
       new Transaction({
         amountInCents: amount_in_cents,
         createdAt: transaction.created_at,
@@ -74,6 +74,6 @@ export class CreateTransaction {
       }),
     );
 
-    return transaction.id;
+    return t;
   }
 }

@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { DetailedHTMLProps, InputHTMLAttributes } from "react";
+import type { DetailedHTMLProps, InputHTMLAttributes } from "react";
 
 export const Input = ({
   label,
@@ -13,7 +13,7 @@ export const Input = ({
   HTMLInputElement
 >) => {
   return (
-    <div>
+    <div className="w-full">
       {!!label && (
         <label className="block text-sm font-medium text-foreground mb-2">
           {label}

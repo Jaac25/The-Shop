@@ -33,13 +33,14 @@ export class FindTransaction {
       throw new Error('Transaction not found in Wompi');
     }
 
-    const newTransaction = await this.repo.update({
-      idTransactionWompi,
-      finalizedAt: wompiTransaction?.finalized_at ?? '',
-      status: wompiTransaction.status,
-      statusMessage: wompiTransaction.status_message,
-    });
-
-    return newTransaction;
+    if (wompiTransaction.status !== 'PENDING') {
+      const newTransaction = await this.repo.update({
+        idTransactionWompi,
+        finalizedAt: wompiTransaction?.finalized_at ?? '',
+        status: wompiTransaction.status,
+        statusMessage: wompiTransaction.status_message,
+      });
+      return newTransaction;
+    }
   }
 }

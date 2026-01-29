@@ -1,5 +1,5 @@
 /**
- * @url WOMPI_ENVIRONMENT/tokens/cards
+ * @url [WOMPI_ENVIRONMENT]/tokens/cards
  * @method POST
  * @type Response
  */

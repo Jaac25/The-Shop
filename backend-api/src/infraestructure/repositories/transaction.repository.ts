@@ -31,7 +31,7 @@ export class SequelizeTransactionRepository implements TransactionRepository {
     return transaction;
   }
 
-  async create(transaction: Transaction): Promise<string> {
+  async create(transaction: Transaction): Promise<ITransaction> {
     const newTransaction = await this.transactionModel.create({
       status: transaction.status,
       amountInCents: transaction.amountInCents,
@@ -43,7 +43,7 @@ export class SequelizeTransactionRepository implements TransactionRepository {
       reference: transaction.reference,
       statusMessage: transaction.statusMessage,
     });
-    return newTransaction.idTransactionWompi;
+    return { ...newTransaction.dataValues };
   }
 
   async update(

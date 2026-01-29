@@ -11,7 +11,8 @@ export class SequelizeOrderRepository implements OrderRepository {
     private readonly orderModel: typeof OrderModel,
   ) {}
 
-  async create(order: IOrder): Promise<void> {
-    await this.orderModel.create(order);
+  async create(order: IOrder): Promise<{ id: string }> {
+    const o = await this.orderModel.create(order);
+    return { id: o.dataValues?.idOrder?.toString() ?? '' };
   }
 }

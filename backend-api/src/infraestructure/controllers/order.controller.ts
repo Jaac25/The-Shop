@@ -14,10 +14,10 @@ export class OrderController {
       address: string;
       idProduct: string;
     },
-  ): Promise<{ message: string }> {
+  ): Promise<{ id: string }> {
     try {
-      await this.createOrder.execute(body);
-      return { message: 'Order created successfully' };
+      const { id } = await this.createOrder.execute(body);
+      return { id };
     } catch (error) {
       console.error('Error creating order:', error);
       throw new BadRequestException(

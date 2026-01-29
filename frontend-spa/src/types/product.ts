@@ -1,5 +1,10 @@
+/**
+ * @url /products
+ * @method GET
+ * @type Response
+ */
 export interface Product {
-  id: string;
+  idProduct: string;
   name: string;
   price: number;
   image?: string;

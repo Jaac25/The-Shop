@@ -16,6 +16,7 @@ export class SequelizeUserRepository implements UserRepository {
       name: user.name,
       email: user.email,
     });
-    return { id: u.idUser.toString() };
+    const idUser = u?.dataValues?.idUser?.toString() ?? '';
+    return { id: idUser };
   }
 }

@@ -1,6 +1,6 @@
 import { useFormatValue } from "../core/hooks/useFormatValue";
 import type { Product } from "../types/product";
-import { Button } from "./form/Button";
+import { Button } from "./ui/Button";
 
 interface ProductCardProps {
   product: Product;
