@@ -5,7 +5,7 @@
 /backend-api/.vscode
 /backend-api/dist
 /backend-api/node_modules
-
+/backend-api/.env
 
 /Front/.next
 /Front/node_modules
@@ -13,3 +13,4 @@
 
 /frontend-spa/.next
 /frontend-spa/node_modules
+/frontend-spa/.env
