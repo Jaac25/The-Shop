@@ -1,11 +1,13 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Product } from "../../types/product";
 import { loadFromLocalStorage } from "../../store/localStorage";
+import { Product } from "../../types/product";
+import { TransactionResume } from "../../types/transactions";
 
 export interface IInfo {
   address?: string;
   dataUser?: {name?: string, email?: string};
   product?: Product;
+  transaction?: TransactionResume;
 }
 
 const persistedState = loadFromLocalStorage();
@@ -16,8 +18,8 @@ const initialState: IInfo = persistedState || {
   dataUser: undefined,
 };
 
-const productsSlice = createSlice({
-  name: "products",
+const infoSlice = createSlice({
+  name: "info",
   initialState,
   reducers: {
     setProduct: (state, action: PayloadAction<Product | undefined>) => {
@@ -29,10 +31,13 @@ const productsSlice = createSlice({
     setUser: (state, action: PayloadAction<IInfo["dataUser"]>) => {
       state.dataUser = action.payload;
     },
+    setTransaction: (state, action: PayloadAction<IInfo["transaction"]>) => {
+      state.transaction = action.payload;
+    },
   },
 });
 
-export const { setProduct, setAddress , setUser } =
-  productsSlice.actions;
+export const { setProduct, setAddress , setUser ,setTransaction} =
+  infoSlice.actions;
 
-export default productsSlice.reducer;
+export default infoSlice.reducer;

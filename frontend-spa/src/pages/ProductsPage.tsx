@@ -11,10 +11,17 @@ import type { TransactionResume } from "../types/transactions";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAppDispatch, useAppSelector } from "../core/hooks/useRedux";
 import { MsgModal } from "../components/MsgModal";
-import { setProduct, setAddress, setUser } from "../features/info/infoSlice";
+import {
+  setProduct,
+  setAddress,
+  setUser,
+  setTransaction as setStoreTransaction,
+} from "../features/info/infoSlice";
 
 export const ProductsPage = () => {
-  const { product } = useAppSelector((state) => state.info);
+  const { product, transaction: transactionStorage } = useAppSelector(
+    (state) => state.info,
+  );
   const dispatch = useAppDispatch();
 
   const handleCleanStore = () => {
@@ -28,8 +35,8 @@ export const ProductsPage = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | undefined>(
     product,
   );
-  const [transaction, setTransaction] = useState<TransactionResume | null>(
-    null,
+  const [transaction, setTransaction] = useState<TransactionResume | undefined>(
+    transactionStorage,
   );
   const [showMsg, setShowMsg] = useState<boolean>(!!product);
 
@@ -41,6 +48,7 @@ export const ProductsPage = () => {
   const handlePaymentSuccess = (transactionData: TransactionResume) => {
     setSelectedProduct(undefined);
     saveStoreProduct(undefined);
+    dispatch(setStoreTransaction(transactionData));
     setTransaction(transactionData);
   };
 
@@ -50,7 +58,8 @@ export const ProductsPage = () => {
   };
 
   const handleCloseSummary = () => {
-    setTransaction(null);
+    setTransaction(undefined);
+    dispatch(setStoreTransaction(undefined));
   };
 
   const {
