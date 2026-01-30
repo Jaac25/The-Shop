@@ -1,8 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ITransaction, Transaction } from 'src/domain/entities/Transaction';
-import type { MerchantService } from 'src/domain/ports/MerchantService.repository';
+import { ITransaction } from 'src/domain/entities/Transaction';
 import type { TransactionRepository } from 'src/domain/ports/transaction.repository';
 import { TRANSACTION_REPOSITORY } from 'src/domain/ports/transaction.repository';
+import { WompiMerchantService } from 'src/infraestructure/wompi/wompi-merchant.service';
 import { WompiService } from 'src/infraestructure/wompi/wompi-transaction.service';
 
 @Injectable()
@@ -11,7 +11,7 @@ export class CreateTransaction {
     @Inject(TRANSACTION_REPOSITORY)
     private readonly repo: TransactionRepository,
     private readonly wompiTransaction: WompiService,
-    private readonly wompiMerchant: MerchantService,
+    private readonly wompiMerchant: WompiMerchantService,
   ) {}
 
   async execute({
