@@ -61,7 +61,7 @@ export class CreateTransaction {
     }
 
     const t = await this.repo.create(
-      new Transaction({
+      {
         amountInCents: amount_in_cents,
         createdAt: transaction.created_at,
         idOrder: parseInt(idOrder.toString()) ?? 0,
@@ -71,7 +71,7 @@ export class CreateTransaction {
         status: transaction.status,
         finalizedAt: transaction.finalized_at,
         statusMessage: transaction.status_message,
-      }),
+      }
     );
 
     return t;
