@@ -1,0 +1,326 @@
+{
+  "info": {
+    "_postman_id": "1a751e84-fc81-4867-bfc4-6d7e4535abfc",
+    "name": "TheShop",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "11768712"
+  },
+  "item": [
+    {
+      "name": "List products",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{ENV}}/products",
+          "host": [
+            "{{ENV}}"
+          ],
+          "path": [
+            "products"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Find transaction",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": []
+        },
+        "url": {
+          "raw": "{{ENV}}/transactions?id=15113-1769782408-69772&idProduct=1",
+          "host": [
+            "{{ENV}}"
+          ],
+          "path": [
+            "transactions"
+          ],
+          "query": [
+            {
+              "key": "id",
+              "value": "15113-1769782408-69772",
+              "type": "text"
+            },
+            {
+              "key": "idProduct",
+              "value": "1",
+              "type": "text"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create User",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "email",
+              "value": "a@a.com",
+              "type": "text",
+              "uuid": "26fbaa5c-b392-47fb-b699-4838eb63079c"
+            },
+            {
+              "key": "name",
+              "value": "Prueba",
+              "type": "text",
+              "uuid": "8c1f71d2-7e61-461f-87a9-638d1e418df0"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{ENV}}/users",
+          "host": [
+            "{{ENV}}"
+          ],
+          "path": [
+            "users"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Order",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "name",
+              "value": "Jorge",
+              "type": "text",
+              "uuid": "26fbaa5c-b392-47fb-b699-4838eb63079c"
+            },
+            {
+              "key": "email",
+              "value": "acevedo@acevedo.com",
+              "type": "text",
+              "uuid": "8c1f71d2-7e61-461f-87a9-638d1e418df0"
+            },
+            {
+              "key": "address",
+              "value": "cra 11",
+              "type": "text",
+              "uuid": "ab0659e8-ca1f-42ce-9c4e-cb1b7c2d57f4"
+            },
+            {
+              "key": "idProduct",
+              "value": "11",
+              "type": "text",
+              "uuid": "7f119ad5-7144-4f47-9587-43664a5ba919"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{ENV}}/orders",
+          "host": [
+            "{{ENV}}"
+          ],
+          "path": [
+            "orders"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Transaction",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "pm.sendRequest(\r",
+              "  {\r",
+              "    url: `${pm.environment.get('WOMPI_ENVIRONMENT')}/tokens/cards`,\r",
+              "    method: 'POST',\r",
+              "    header: {\r",
+              "      'Content-Type': 'application/json',\r",
+              "      Authorization: `Bearer ${pm.environment.get('WOMPI_PUBLIC_KEY')}`,\r",
+              "    },\r",
+              "    body: {\r",
+              "      mode: 'raw',\r",
+              "      raw: JSON.stringify({\r",
+              "        number: pm.environment.get('CARD_NUMBER'),\r",
+              "        cvc: pm.environment.get('CARD_CVC'),\r",
+              "        exp_month: pm.environment.get('CARD_EXP_MONTH'),\r",
+              "        exp_year: pm.environment.get('CARD_EXP_YEAR'),\r",
+              "        card_holder: pm.environment.get('CARD_HOLDER')\r",
+              "      }),\r",
+              "    },\r",
+              "  },\r",
+              "  function (err, res) {\r",
+              "    if (err) {\r",
+              "      console.log(err);\r",
+              "      return;\r",
+              "    }\r",
+              "\r",
+              "    const json = res.json();\r",
+              "    console.log(json)\r",
+              "    pm.environment.set('cardToken', json.data.id);\r",
+              "  }\r",
+              ");\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "idOrder",
+              "value": "1",
+              "type": "text",
+              "uuid": "8c1f71d2-7e61-461f-87a9-638d1e418df0"
+            },
+            {
+              "key": "amountInCents",
+              "value": "150000",
+              "type": "text",
+              "uuid": "1d313557-72e4-42d6-bc82-8f3fdec06cef"
+            },
+            {
+              "key": "customerEmail",
+              "value": "a@a.com",
+              "type": "text",
+              "uuid": "640b2cff-bfad-4382-8026-8935e9700212"
+            },
+            {
+              "key": "token",
+              "value": "{{cardToken}}",
+              "type": "text",
+              "uuid": "72398846-cb55-44c8-86af-486fbde70c8a"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{ENV}}/transactions",
+          "host": [
+            "{{ENV}}"
+          ],
+          "path": [
+            "transactions"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Address",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "address",
+              "value": "cra 11 # 12",
+              "type": "text",
+              "uuid": "26fbaa5c-b392-47fb-b699-4838eb63079c"
+            },
+            {
+              "key": "name",
+              "value": "Prueba",
+              "type": "text",
+              "uuid": "8c1f71d2-7e61-461f-87a9-638d1e418df0",
+              "disabled": true
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{ENV}}/addresses",
+          "host": [
+            "{{ENV}}"
+          ],
+          "path": [
+            "addresses"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update transaction",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "id",
+              "value": "15113-1769675836-65502",
+              "type": "text",
+              "uuid": "70d1a9b8-aa9e-4ede-8316-ae88f532a320"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{ENV}}/transactions",
+          "host": [
+            "{{ENV}}"
+          ],
+          "path": [
+            "transactions"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "ENV",
+      "value": "",
+      "type": "default"
+    }
+  ]
+}
