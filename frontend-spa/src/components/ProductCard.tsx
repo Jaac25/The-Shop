@@ -13,7 +13,10 @@ export const ProductCard = ({ product, onBuy }: ProductCardProps) => {
 
   const sold = product.quantity === 0;
   return (
-    <div className=" h-full bg-card rounded-2xl shadow overflow-hidden transition-all duration-300 group">
+    <div
+      data-testid="product-card"
+      className=" h-full bg-card rounded-2xl shadow overflow-hidden transition-all duration-300 group"
+    >
       <div className="aspect-square overflow-hidden">
         {product?.image && (
           <img

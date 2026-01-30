@@ -14,3 +14,4 @@
 /frontend-spa/.next
 /frontend-spa/node_modules
 /frontend-spa/.env
+/frontend-spa/coverage

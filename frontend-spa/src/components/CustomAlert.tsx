@@ -1,4 +1,3 @@
-"use client";
 import { ToastContainer, toast, type ToastOptions } from "react-toastify";
 
 export const CustomAlert = () => {

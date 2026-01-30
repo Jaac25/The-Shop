@@ -168,7 +168,7 @@ export const TransactionSummary = ({
           className="modal-content w-full max-w-md animate-scale-in text-center flex justify-center items-center h-96"
           onClick={(e) => e.stopPropagation()}
         >
-          <Loading color="green" />
+          <Loading data-testid="loading" color="green" />
         </div>
       </div>
     );

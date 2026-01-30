@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 
 import useSWR from "swr";
@@ -37,7 +35,7 @@ export const ProductsPage = () => {
 
   const {
     data: products = [],
-    isLoading: isLoading,
+    isLoading,
     mutate,
   } = useSWR<Product[]>(
     {
@@ -49,7 +47,10 @@ export const ProductsPage = () => {
   let children = null;
   if (isLoading)
     children = (
-      <main className="container max-w-6xl mx-auto px-4 py-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      <main
+        data-testid="loading"
+        className="container max-w-6xl mx-auto px-4 py-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
+      >
         {Array.from({ length: 15 }).map((_, id) => (
           <div key={id} className="animate-pulse">
             <div className="bg-card rounded-2xl shadow overflow-hidden transition-all duration-300 group">
@@ -68,7 +69,7 @@ export const ProductsPage = () => {
   else if (!products.length)
     children = (
       <div className="w-full h-full flex flex-col justify-center items-center">
-        Estamos buscando los productos
+        No encontramos ningún producto
         <Loading color="green" />
       </div>
     );
@@ -87,7 +88,6 @@ export const ProductsPage = () => {
                 delay: index * 0.05,
                 ease: "easeOut",
               }}
-              // className="flex justify-self-center flex-col items-center"
             >
               <ProductCard
                 key={product.idProduct}

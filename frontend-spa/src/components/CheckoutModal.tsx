@@ -202,7 +202,11 @@ export const CheckoutModal = ({
           <h2 className="font-display text-2xl font-semibold text-foreground">
             Finalizar Compra
           </h2>
-          <Button onClick={onClose} className="p-2 rounded-full">
+          <Button
+            data-testid="btnClose"
+            onClick={onClose}
+            className="p-2 rounded-full"
+          >
             <X className="w-5 h-5 text-white" />
           </Button>
         </div>
@@ -230,6 +234,7 @@ export const CheckoutModal = ({
                 label="Número de Tarjeta"
                 placeholder="1234 5678 9012 3456"
                 className="pl-12 w-full"
+                required
                 value={cardNumber}
                 {...register("cardNumber", {
                   required: true,
@@ -255,6 +260,7 @@ export const CheckoutModal = ({
             <Input
               label="Nombre en la tarjeta"
               placeholder="Juan Pérez"
+              required
               {...register("cardHolder", { required: true })}
             />
 
@@ -263,6 +269,7 @@ export const CheckoutModal = ({
                 label="Fecha de Expiración"
                 placeholder="MM/AA"
                 value={expiryDate}
+                required
                 {...register("expiryDate", {
                   required: true,
                   onChange: (e) =>
@@ -274,6 +281,7 @@ export const CheckoutModal = ({
               <Input
                 label="cvc"
                 placeholder="123"
+                required
                 value={cvc}
                 {...register("cvc", {
                   required: true,
@@ -291,16 +299,19 @@ export const CheckoutModal = ({
             <Input
               label="Nombre del destinatario"
               placeholder="Juan Ignacio Torres"
+              required
               {...register("name", { required: true })}
             />
             <Input
               label="Email del destinatario"
               placeholder="juanito@theshop.com"
+              required
               {...register("email", { required: true })}
             />
             <Input
               label="Dirección destino"
               placeholder="cra 11 # 55"
+              required
               {...register("address", { required: true })}
             />
           </div>
