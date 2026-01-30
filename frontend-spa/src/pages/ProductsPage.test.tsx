@@ -1,7 +1,9 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
-import { ProductsPage } from "./ProductsPage";
 import useSWR from "swr";
+import { useAppDispatch, useAppSelector } from "../core/hooks/useRedux";
+import { Product } from "../types/product";
+import { ProductsPage } from "./ProductsPage";
 
 const products = [
   {
@@ -27,21 +29,9 @@ const products = [
   },
 ];
 
-// jest.mock("swr", () => ({
-//   __esModule: true,
-//   default: (key: { url?: string }) => {
-//     if (key && key.url === "/products") {
-//       return {
-//         data: products,
-//         isLoading: false,
-//         error: undefined,
-//       };
-//     }
-//     return { data: undefined, isLoading: false, error: undefined };
-//   },
-// }));
-
 jest.mock("swr");
+jest.mock("../core/hooks/useRedux");
+const mockDispatch = jest.fn();
 
 const mockedUseSWR = useSWR as jest.Mock;
 
@@ -82,6 +72,15 @@ jest.mock("framer-motion", () => {
 
 describe("renders products page", () => {
   beforeEach(() => {
+    (useAppSelector as jest.Mock).mockImplementation((selectorFn) =>
+      selectorFn({
+        info: {
+          dataUser: undefined,
+          address: "",
+          product: undefined,
+        },
+      }),
+    );
     mockedUseSWR.mockReturnValue({
       data: products,
       isLoading: false,
@@ -89,6 +88,7 @@ describe("renders products page", () => {
       error: undefined,
     });
     render(<ProductsPage />);
+    (useAppDispatch as jest.Mock).mockReturnValue(mockDispatch);
   });
   it("renders header", async () => {
     const title = await screen.findByText(/Boutique Elegance/i);
@@ -141,6 +141,37 @@ describe("renders products page", () => {
     const btn = btns.at(0)!;
     fireEvent.click(btn);
     const titleModal = await screen.findByText(/Finalizar Compra/i);
+    expect(titleModal).toBeInTheDocument();
+  });
+  it("opens checkout modal when clicking Pay", async () => {
+    const btns = await screen.findAllByText(/Pay/i);
+    expect(btns.length).toBe(2);
+    const btn = btns.at(0)!;
+    fireEvent.click(btn);
+    const titleModal = await screen.findByText(/Finalizar Compra/i);
+    expect(titleModal).toBeInTheDocument();
+  });
+  it("Should show message for recover buy", async () => {
+    (useAppSelector as jest.Mock).mockImplementationOnce((selectorFn) =>
+      selectorFn({
+        info: {
+          product: {
+            idProduct: "1",
+            name: "Producto",
+            price: 200000,
+            quantity: 1,
+            image: "",
+          } as Product,
+          dataUser: { name: "Test User", email: "test@user.com" },
+          address: "cra 11",
+        },
+      }),
+    );
+
+    render(<ProductsPage />);
+
+    // Espera a que el título del modal aparezca
+    const titleModal = await screen.findByText(/Continuar compra/i);
     expect(titleModal).toBeInTheDocument();
   });
 });

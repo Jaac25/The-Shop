@@ -9,24 +9,44 @@ import { TransactionSummary } from "../components/TransactionSummary";
 import type { Product } from "../types/product";
 import type { TransactionResume } from "../types/transactions";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAppDispatch, useAppSelector } from "../core/hooks/useRedux";
+import { MsgModal } from "../components/MsgModal";
+import { setProduct, setAddress, setUser } from "../features/info/infoSlice";
 
 export const ProductsPage = () => {
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const { product } = useAppSelector((state) => state.info);
+  const dispatch = useAppDispatch();
+
+  const handleCleanStore = () => {
+    dispatch(setProduct(undefined));
+    dispatch(setAddress(""));
+    dispatch(setUser(undefined));
+  };
+
+  const saveStoreProduct = (product?: Product) => dispatch(setProduct(product));
+
+  const [selectedProduct, setSelectedProduct] = useState<Product | undefined>(
+    product,
+  );
   const [transaction, setTransaction] = useState<TransactionResume | null>(
     null,
   );
+  const [showMsg, setShowMsg] = useState<boolean>(!!product);
 
   const handleBuy = (product: Product) => {
+    saveStoreProduct(product);
     setSelectedProduct(product);
   };
 
   const handlePaymentSuccess = (transactionData: TransactionResume) => {
-    setSelectedProduct(null);
+    setSelectedProduct(undefined);
+    saveStoreProduct(undefined);
     setTransaction(transactionData);
   };
 
   const handleCloseModal = () => {
-    setSelectedProduct(null);
+    saveStoreProduct(undefined);
+    setSelectedProduct(undefined);
   };
 
   const handleCloseSummary = () => {
@@ -102,7 +122,6 @@ export const ProductsPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <header className="sticky top-0 bg-linear-to-t z-50 from-green-100 backdrop-blur-md to-transparent py-8 ">
         <div className="container max-w-6xl mx-auto px-4">
           <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground text-center">
@@ -114,10 +133,20 @@ export const ProductsPage = () => {
         </div>
       </header>
 
-      {/* Products Grid */}
       {children}
 
-      {selectedProduct && (
+      {showMsg && (
+        <MsgModal
+          onClose={() => {
+            handleCleanStore();
+            setSelectedProduct(undefined);
+            setShowMsg(false);
+          }}
+          onSuccess={() => setShowMsg(false)}
+        />
+      )}
+
+      {selectedProduct && !showMsg && (
         <CheckoutModal
           product={selectedProduct}
           onClose={handleCloseModal}

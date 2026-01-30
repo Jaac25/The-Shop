@@ -1,10 +1,3 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { CheckoutModal } from "./CheckoutModal";
-import { request } from "../app/providers";
-import * as Alerts from "./CustomAlert";
-
-jest.spyOn(Alerts, "ErrorAlert").mockImplementation(jest.fn());
-
 jest.mock("../config/env", () => ({
   ENV: {
     HOST: "http://localhost:5173",
@@ -16,6 +9,18 @@ jest.mock("../config/env", () => ({
 jest.mock("../app/providers", () => ({
   request: { post: jest.fn() },
 }));
+
+jest.mock("../core/hooks/useRedux");
+
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { CheckoutModal } from "./CheckoutModal";
+import { request } from "../app/providers";
+import * as Alerts from "./CustomAlert";
+import { useAppDispatch, useAppSelector } from "../core/hooks/useRedux";
+import { act } from "react";
+
+jest.spyOn(Alerts, "ErrorAlert").mockImplementation(jest.fn());
+const mockDispatch = jest.fn();
 
 const products = [
   {
@@ -42,8 +47,19 @@ const products = [
 ];
 
 describe("Validation checkout modal", () => {
+  jest.clearAllMocks();
   const onClose = jest.fn();
-
+  beforeEach(() => {
+    (useAppSelector as jest.Mock).mockImplementation((selectorFn) =>
+      selectorFn({
+        info: {
+          dataUser: { name: "Test User", email: "test@user.com" },
+          address: "cra 11",
+        },
+      }),
+    );
+  });
+  (useAppDispatch as jest.Mock).mockReturnValue(mockDispatch);
   it("Must allow change the info in checkout modal and show summary modal", async () => {
     render(
       <CheckoutModal
@@ -87,15 +103,79 @@ describe("Validation checkout modal", () => {
     expect(emailInput).toBeInTheDocument();
     fireEvent.change(emailInput, { target: { value: "a@a.com" } });
 
-    const addressInput = await screen.findByPlaceholderText("cra 11 # 55");
-    expect(addressInput).toBeInTheDocument();
-    fireEvent.change(addressInput, { target: { value: "cra 11" } });
-    expect(addressInput).toHaveValue("cra 11");
-
     const btn = await screen.findByText(/Pagar/i);
     expect(btn).toBeInTheDocument();
     fireEvent.click(btn);
   });
+  it("calls onSuccess when payment flow succeeds", async () => {
+    const onSuccess = jest.fn();
+
+    (request.post as jest.Mock)
+      .mockResolvedValueOnce({ data: { id: "12" } }) // createOrder
+      .mockResolvedValueOnce({ data: { data: { id: "token123" } } }) //TokenizeCard
+      .mockResolvedValueOnce({
+        data: { idTransaction: "txn123", status: "success" },
+      }); // createTransaction
+
+    render(
+      <CheckoutModal
+        product={products[0]}
+        onClose={() => {}}
+        onSuccess={onSuccess}
+      />,
+    );
+
+    fireEvent.change(
+      await screen.findByPlaceholderText("1234 5678 9012 3456"),
+      {
+        target: { value: "4242424242424242" },
+      },
+    );
+    fireEvent.change(await screen.findByPlaceholderText("Juan Pérez"), {
+      target: { value: "Juan Pérez" },
+    });
+    fireEvent.change(await screen.findByPlaceholderText("MM/AA"), {
+      target: { value: "12/28" },
+    });
+    fireEvent.change(await screen.findByPlaceholderText("123"), {
+      target: { value: "123" },
+    });
+    fireEvent.change(
+      await screen.findByPlaceholderText("Juan Ignacio Torres"),
+      {
+        target: { value: "Juan Torres" },
+      },
+    );
+    fireEvent.change(
+      await screen.findByPlaceholderText("juanito@theshop.com"),
+      {
+        target: { value: "juan@correo.com" },
+      },
+    );
+    fireEvent.change(await screen.findByPlaceholderText("cra 11 # 55"), {
+      target: { value: "Cra 11" },
+    });
+
+    const btn = await screen.findByText(/Pagar/i);
+
+    await act(async () => {
+      fireEvent.click(btn);
+    });
+    await screen.findByText(/Pago seguro encriptado/i);
+
+    await waitFor(() => expect(onSuccess).toHaveBeenCalled());
+
+    expect(onSuccess).toHaveBeenCalledWith(
+      expect.objectContaining({
+        idTransaction: "txn123",
+        product: products[0],
+        name: "Juan Torres",
+        cardLast4: "4242",
+        address: "Cra 11",
+      }),
+    );
+  });
+
   it("closes the modal when clicking on overlay or X button", async () => {
     render(
       <CheckoutModal

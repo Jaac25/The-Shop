@@ -1,19 +1,21 @@
 import { AxiosError } from "axios";
 import { Lock, X } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { request } from "../app/providers";
 import { ENV } from "../config/env";
 import { useFormatValue } from "../core/hooks/useFormatValue";
+import { useAppDispatch, useAppSelector } from "../core/hooks/useRedux";
+import { IInfo, setAddress, setUser } from "../features/info/infoSlice";
+import {
+  detectCardType,
+  getCardTypeIcon,
+} from "../shared/helpers/detectCardType";
 import type { ICardBody, ICardResponse } from "../types/[wompi]/tokens/cards";
 import type { Product } from "../types/product";
 import type { ITransaction, TransactionResume } from "../types/transactions";
 import { ErrorAlert } from "./CustomAlert";
 import { Button } from "./ui/Button";
 import { Input } from "./ui/Input";
-import {
-  detectCardType,
-  getCardTypeIcon,
-} from "../shared/helpers/detectCardType";
 
 interface CheckoutModalProps {
   product: Product;
@@ -36,13 +38,14 @@ export const CheckoutModal = ({
   onClose,
   onSuccess,
 }: CheckoutModalProps) => {
+  const { dataUser, address } = useAppSelector((state) => state.info);
+  const dispatch = useAppDispatch();
   const { formatValue } = useFormatValue();
 
   const {
-    register,
     handleSubmit,
-    setValue,
     watch,
+    control,
     formState: { isSubmitting },
   } = useForm<FormValues>({
     defaultValues: {
@@ -50,15 +53,13 @@ export const CheckoutModal = ({
       cardHolder: "",
       expiryDate: "",
       cvc: "",
-      name: "",
-      email: "",
-      address: "",
+      name: dataUser?.name ?? "",
+      email: dataUser?.email ?? "",
+      address: address ?? "",
     },
   });
 
   const cardNumber = watch("cardNumber");
-  const expiryDate = watch("expiryDate");
-  const cvc = watch("cvc");
 
   const formatCardNumber = (value: string) => {
     const cleaned = value.replace(/\D/g, "");
@@ -169,7 +170,7 @@ export const CheckoutModal = ({
       });
 
       const transaction = await createTransaction({
-        token: infoToken.id,
+        token: infoToken?.id,
         amountInCents: (product.price * 100).toString(),
         customerEmail: data.email,
         idOrder,
@@ -188,6 +189,18 @@ export const CheckoutModal = ({
       ErrorAlert(`${error.response?.data.message ?? error.message ?? error}`);
     }
   };
+
+  const setStoreUser = (data: IInfo["dataUser"]) => {
+    const { email, name } = data || {};
+    dispatch(
+      setUser({
+        email: email ?? dataUser?.email,
+        name: name ?? dataUser?.name,
+      }),
+    );
+  };
+
+  const setStoreAddress = (address: string) => dispatch(setAddress(address));
 
   return (
     <div
@@ -230,18 +243,23 @@ export const CheckoutModal = ({
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-4 shadow p-4 rounded">
             <div>
-              <Input
-                label="Número de Tarjeta"
-                placeholder="1234 5678 9012 3456"
-                className="pl-12 w-full"
-                required
-                value={cardNumber}
-                {...register("cardNumber", {
-                  required: true,
-                  onChange: (e) =>
-                    setValue("cardNumber", formatCardNumber(e.target.value)),
-                })}
-                maxLength={19}
+              <Controller
+                name="cardNumber"
+                control={control}
+                rules={{ required: true }}
+                render={({ field }) => (
+                  <Input
+                    label="Número de Tarjeta"
+                    placeholder="1234 5678 9012 3456"
+                    className="pl-12 w-full"
+                    maxLength={19}
+                    required
+                    {...field}
+                    onChange={(e) =>
+                      field.onChange(formatCardNumber(e.target.value))
+                    }
+                  />
+                )}
               />
               {detectCardType(cardNumber) && (
                 <div className="flex items-center gap-2 h-min mt-2 justify-end">
@@ -257,62 +275,113 @@ export const CheckoutModal = ({
               )}
             </div>
 
-            <Input
-              label="Nombre en la tarjeta"
-              placeholder="Juan Pérez"
-              required
-              {...register("cardHolder", { required: true })}
+            <Controller
+              name="cardHolder"
+              control={control}
+              rules={{ required: true }}
+              render={({ field }) => (
+                <Input
+                  label="Nombre en la tarjeta"
+                  placeholder="Juan Pérez"
+                  required
+                  {...field}
+                />
+              )}
             />
 
             <div className="grid grid-cols-2 gap-4">
-              <Input
-                label="Fecha de Expiración"
-                placeholder="MM/AA"
-                value={expiryDate}
-                required
-                {...register("expiryDate", {
-                  required: true,
-                  onChange: (e) =>
-                    setValue("expiryDate", formatExpiryDate(e.target.value)),
-                })}
-                maxLength={5}
+              <Controller
+                name="expiryDate"
+                control={control}
+                rules={{ required: true }}
+                render={({ field }) => (
+                  <Input
+                    label="Fecha de Expiración"
+                    placeholder="MM/AA"
+                    maxLength={5}
+                    required
+                    {...field}
+                    onChange={(e) =>
+                      field.onChange(formatExpiryDate(e.target.value))
+                    }
+                  />
+                )}
               />
 
-              <Input
-                label="cvc"
-                placeholder="123"
-                required
-                value={cvc}
-                {...register("cvc", {
-                  required: true,
-                  onChange: (e) =>
-                    setValue(
-                      "cvc",
-                      e.target.value.replace(/\D/g, "").substring(0, 4),
-                    ),
-                })}
-                maxLength={4}
+              <Controller
+                name="cvc"
+                control={control}
+                rules={{ required: true }}
+                render={({ field }) => (
+                  <Input
+                    label="cvc"
+                    placeholder="123"
+                    maxLength={4}
+                    required
+                    {...field}
+                    onChange={(e) =>
+                      field.onChange(
+                        e.target.value.replace(/\D/g, "").substring(0, 4),
+                      )
+                    }
+                  />
+                )}
               />
             </div>
           </div>
           <div className="space-y-4 shadow  p-4 rounded">
-            <Input
-              label="Nombre del destinatario"
-              placeholder="Juan Ignacio Torres"
-              required
-              {...register("name", { required: true })}
+            <Controller
+              name="name"
+              control={control}
+              rules={{ required: true }}
+              render={({ field }) => (
+                <Input
+                  label="Nombre del destinatario"
+                  placeholder="Juan Ignacio Torres"
+                  required
+                  {...field}
+                  onChange={(e) => {
+                    setStoreUser({ name: e.target.value });
+                    field.onChange(e);
+                  }}
+                />
+              )}
             />
-            <Input
-              label="Email del destinatario"
-              placeholder="juanito@theshop.com"
-              required
-              {...register("email", { required: true })}
+
+            <Controller
+              name="email"
+              control={control}
+              rules={{ required: true }}
+              render={({ field }) => (
+                <Input
+                  label="Email del destinatario"
+                  placeholder="juanito@theshop.com"
+                  required
+                  {...field}
+                  onChange={(e) => {
+                    setStoreUser({ email: e.target.value });
+                    field.onChange(e);
+                  }}
+                />
+              )}
             />
-            <Input
-              label="Dirección destino"
-              placeholder="cra 11 # 55"
-              required
-              {...register("address", { required: true })}
+
+            <Controller
+              name="address"
+              control={control}
+              rules={{ required: true }}
+              render={({ field }) => (
+                <Input
+                  label="Dirección destino"
+                  placeholder="cra 11 # 55"
+                  required
+                  {...field}
+                  onChange={(e) => {
+                    setStoreAddress(e.target.value);
+                    field.onChange(e);
+                  }}
+                />
+              )}
             />
           </div>
 
