@@ -3,9 +3,10 @@ import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import { IMetadata } from './types/common';
 import { IMerchantResponse } from './types/merchants/[publicKey]';
+import { MerchantService } from 'src/domain/ports/MerchantService.repository';
 
 @Injectable()
-export class WompiMerchantService {
+export class WompiMerchantService implements MerchantService {
   constructor(private readonly config: ConfigService) {}
 
   async execute(): Promise<string | undefined> {

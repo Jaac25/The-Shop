@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { ITransaction, Transaction } from '../../domain/entities/Transaction';
+import { ITransaction } from '../../domain/entities/Transaction';
 import { TransactionRepository } from '../../domain/ports/transaction.repository';
 import { TransactionModel } from '../models/transaction.model';
 
@@ -31,7 +31,7 @@ export class SequelizeTransactionRepository implements TransactionRepository {
     return transaction;
   }
 
-  async create(transaction: Transaction): Promise<ITransaction> {
+  async create(transaction: ITransaction): Promise<ITransaction> {
     const newTransaction = await this.transactionModel.create({
       status: transaction.status,
       amountInCents: transaction.amountInCents,
